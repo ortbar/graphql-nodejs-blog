@@ -1,6 +1,7 @@
-const {GraphQLList} = require('graphql');
+const {GraphQLList, GraphQLID} = require('graphql');
 const userType = require('./types');
 const {User} = require('../models');
+
 const users = {
     // nos va a devolver una lista de usaruios
     type: new GraphQLList(userType),
@@ -11,5 +12,18 @@ const users = {
     }
 }
 
+const user = {
+    type: userType,
+    description: 'get a user by id',
+    args:{
+        id: {type: GraphQLID},
+    },
+    // pasamos los argumentos por el resolve
+    resolve (_,args) {
+        console.log(args)
+        return User.findById(args.id)
+    }
+}
+
 // para exportar
-module.exports = { users };
+module.exports = { users, user };

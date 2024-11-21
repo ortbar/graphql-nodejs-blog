@@ -12,7 +12,9 @@ const userType = new GraphQLObjectType({
     id: {type:GraphQLID},
     username: {type:GraphQLString},
     email: {type:GraphQLString},
-    password: {type:GraphQLString}
+    password: {type:GraphQLString},
+    createdAt: {type:GraphQLString},
+    updatedAt:{type:GraphQLString}
     }
 })
 
