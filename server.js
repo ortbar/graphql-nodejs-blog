@@ -8,12 +8,17 @@ const {graphqlhttp, graphqlHTTP} = require('express-graphql')
 const schema = require('./graphql/shcema')
 //requerir la conexion a la bd
 const { connectDb } = require('./db')
+const {authenticate } = require('./middlewares/auth')
 
 connectDb();
 
 const app = express()
+// antes de pasar por las rutas pasará por authenticate, no permite avanzar si no hay autenticacion
+app.use(authenticate)
 app.listen(3000)
 console.log('server running on port 3000')
+
+// para proteger las rutas, diseñamos un middleware que se ejecutará antes de que llegue a las rutas
 
 app.get('/',(req, res) => {
     res.send('Bienvenido a my api graphql')

@@ -1,6 +1,8 @@
 const { GraphQLString } = require("graphql");
-const { User } = require('../models')
-const {createJWTtoken} = require('../util/auth')
+const { User, Post } = require('../models')
+const {createJWTtoken} = require('../util/auth');
+const { postType } = require("./types");
+const {authenticate} = require('../middlewares/auth')
 
 const register = {
     type: GraphQLString,
@@ -37,13 +39,35 @@ const login = {
         throw new Error("Invalid credentials")
         // si no, se genera token, pero de nuevo sólo en el id, email y displayname
         const token = createJWTtoken({_id: user.id, email:user.email, displayname: user.displayname})
-
         return token
-
     },
+}
+
+const createPost = {
+    type: postType,
+    description: "Create a new post",
+    args:{
+        title: { type: GraphQLString},
+        body: {type:GraphQLString},
+        authorId:{ type:GraphQLString}
+    },
+    async resolve(_,args, {verifiedUser}) {
+        console.log(verifiedUser)
+        const newPost = new Post({
+            title: args.title,
+            body: args.body,
+// ahora tenemos en el request el verifiedUser, Ya que lo que hemos almacenado ahí tras decodificar el token, del cual podemos extraer su id y lo asignamos a authorID
+            authorId:verifiedUser._id,
+        })
+        return newPost
+    }
+
 
 }
 
-// exportamos pero a traves de un objeto, ya que seran varias mutaciones
-module.exports = {register,login
+// exportamos las mutaciones para poder importarlas en el schema de graphql pero a traves de un objeto, ya que seran varias mutaciones
+module.exports = {
+    register,
+    login,
+    createPost,
 }

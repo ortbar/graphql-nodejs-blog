@@ -7,12 +7,11 @@ const jwt = require('jsonwebtoken')
 
 const createJWTtoken = user => {
     // sign necesita un usuario, un secret y opciones como duracion, etc
-   return jwt.sign({user}, 'hola123', {
+   return jwt.sign({user},"hola123", {
     expiresIn: '1h',
     })
 }
 
 // exportar...
 module.exports = { createJWTtoken,
-
  }

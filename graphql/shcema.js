@@ -2,7 +2,7 @@
 // ⇊⇊⇊ para poder definir consultas y migraciones ⇊⇊⇊
 const { GraphQLSchema, GraphQLObjectType } = require('graphql')
 const { users, user } = require('./queries')
-const {register, login} = require('./mutations')
+const {register, login, createPost} = require('./mutations')
 // con new graphqlSchema permite crear consultas y mutaciones
 
 // crear una consulta
@@ -21,7 +21,8 @@ const MutationType = new GraphQLObjectType({
     fields:{
         register,
         login,
-        user
+        user,
+        createPost
     }
 
 })
