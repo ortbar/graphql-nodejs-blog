@@ -9,6 +9,7 @@ const authenticate = (req, res, next) => {
             // para decodificar el token y extraer el usuario usamos jsonwebtoken, esto decodifica un objeto verified
         const verified = jwt.verify(token, "hola123")
         console.log(verified)
+        // guardamos la parte del objeto verfied que tiene los datos del usuario
         req.verifiedUser = verified.user
         next();  
     } catch (error) {

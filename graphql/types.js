@@ -12,6 +12,7 @@ const userType = new GraphQLObjectType({
         id: {type:GraphQLID},
         username: {type:GraphQLString},
         email: {type:GraphQLString},
+        displayname: {type:GraphQLString},
         password: {type:GraphQLString},
         createdAt: {type:GraphQLString},
         updatedAt:{type:GraphQLString}
@@ -28,7 +29,7 @@ const postType = new GraphQLObjectType({
         body: {type: GraphQLString},
         author:{type: userType, resolve(parent){
             // mas arriba requerimos el modelo user para poder usarlo aqui...
-             // parent se refiere a post y dentro de post buscamos en la bd con la consulta findById por el id del autor
+             // parent se refiere a post (authorId seria hijo de post..) y dentro de post buscamos en la bd con la consulta findById por el id del autor
             return User.findById(parent.authorId)
         }},
     },

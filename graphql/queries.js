@@ -1,4 +1,4 @@
-const {GraphQLList, GraphQLID} = require('graphql');
+const {GraphQLList, GraphQLID, GraphQLString} = require('graphql');
 const {userType,postType} = require('./types');
 const {User, Post} = require('../models');
 
@@ -15,9 +15,10 @@ const users = {
 
 const user = {
     type: userType,
-    description: 'get a user by id',
+    description: 'get user by id',
     args:{
         id: {type: GraphQLID},
+        displaname: {type: GraphQLString}
     },
     // pasamos los argumentos por el resolve
     resolve (_,args) {
@@ -29,10 +30,22 @@ const user = {
 const posts = {
     type: new GraphQLList(postType),
     description: 'Get all Posts',
-     resolve:() => Post.find()
-
-    
+    resolve: async() => Post.find(),   
 }
 
+const post = {
+    type: postType,
+    description: 'get post by id',
+    args:{
+        id: {type: GraphQLID},
+    },
+    async resolve (_,args) {
+        console.log(args)
+        return Post.findById(args.id)
+    }
+
+}
+
+
 // para exportar
-module.exports = { users, user, posts };
+module.exports = { users, user, posts, post };
