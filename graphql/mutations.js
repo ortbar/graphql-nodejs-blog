@@ -1,4 +1,4 @@
-const { GraphQLString } = require("graphql");
+const { GraphQLString, GraphQLID } = require("graphql");
 const { User, Post } = require('../models')
 const {createJWTtoken} = require('../util/auth');
 const { postType } = require("./types");
@@ -27,6 +27,7 @@ const register = {
 
 const login = {
     type: GraphQLString,
+    description: 'Log in an user an return a token',
     args:{
         email: { type: GraphQLString},
         password: { type: GraphQLString},
@@ -39,6 +40,7 @@ const login = {
         throw new Error("Invalid credentials")
         // si no, se genera token, pero de nuevo sólo en el id, email y displayname
         const token = createJWTtoken({_id: user.id, email:user.email, displayname: user.displayname})
+        
         return token
     },
 }
@@ -49,9 +51,9 @@ const createPost = {
     args:{
         title: { type: GraphQLString},
         body: {type:GraphQLString},
-        authorId:{ type:GraphQLString}
+        authorId:{ type:GraphQLID}
     },
-    async resolve(_,args, {verifiedUser}) {
+    async resolve(_, args, {verifiedUser}) {
         console.log(verifiedUser)
         const newPost = new Post({
             title: args.title,
@@ -59,6 +61,8 @@ const createPost = {
 // ahora tenemos en el request el verifiedUser, Ya que lo que hemos almacenado ahí tras decodificar el token, del cual podemos extraer su id y lo asignamos a authorID
             authorId:verifiedUser._id,
         })
+        await newPost.save()
+        
         return newPost
     }
 

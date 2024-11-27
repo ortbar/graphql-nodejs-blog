@@ -28,7 +28,7 @@ const postType = new GraphQLObjectType({
         body: {type: GraphQLString},
         author:{type: userType, resolve(parent){
             // mas arriba requerimos el modelo user para poder usarlo aqui...
-             // parent se refiere a post y dentro de post buscamos en la bd por el id del autor
+             // parent se refiere a post y dentro de post buscamos en la bd con la consulta findById por el id del autor
             return User.findById(parent.authorId)
         }},
     },

@@ -12,7 +12,7 @@ const authenticate = (req, res, next) => {
         req.verifiedUser = verified.user
         next();  
     } catch (error) {
-        // console.log(error)
+        console.log(error)
         next();
     }   
 } 
