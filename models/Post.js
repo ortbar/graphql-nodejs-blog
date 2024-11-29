@@ -16,6 +16,7 @@ const postSchema = new Schema({
     },
 }, {
     timestamps:true
+    
 })
 
 //definir modelo con el esquema creado

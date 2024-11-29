@@ -2,7 +2,8 @@ const { GraphQLString, GraphQLID } = require("graphql");
 const { User, Post } = require('../models')
 const {createJWTtoken} = require('../util/auth');
 const { postType } = require("./types");
-const {authenticate} = require('../middlewares/auth')
+const {authenticate} = require('../middlewares/auth');
+const { findOneAndUpdate } = require("../models/User");
 
 const register = {
     type: GraphQLString,
@@ -43,7 +44,7 @@ const login = {
         
         return token
     },
-}
+};
 
 const createPost = {
     type: postType,
@@ -62,16 +63,56 @@ const createPost = {
             authorId:verifiedUser._id,
         })
         await newPost.save()
-        
         return newPost
     }
+};
 
+const updatePost = {
+    type: postType,
+    description: "Update a Post",
+    // que datos recibimos para poder acutalizar un post??
+    args:{
+        id:{ type:GraphQLID},
+        title: { type: GraphQLString},
+        body: {type:GraphQLString},
+    },
+    // si existe verifiedUser quiere decir que el usuario que está queriendo actualizar es el mismo que quiere actualizar el post
+    // con verifiedUser se esta intentando verificar que el usuario que está intentando actulizar la publicación es el mismo que inicialmente la creó
+    async resolve(_, {id,title,body}, {verifiedUser}) {
+        console.log(verifiedUser)
+        console.log(id,title,body);
 
+        // en este if comprobamos primero:
+        //si un/el usuario se ha autenticado (existe un verifiedUser) 
+        
+        if (!verifiedUser) {throw new Error("Unauthorized")};
+        
+        // si existe, guardamos en updatedPost el resultado de  buscamos el usuario haciendo consulta a la base de datos buscando al usuario por el id comprobando si el mismo que se pasa por parametros
+        // y por el authorId de post, comprobandolo con verfiedUser.authorId, que es tb una propiedad de verifiedUser
+        const updatedPost = await Post.findOneAndUpdate(
+            {_id: id , authorId: verifiedUser._id }, // busca por ...
+            {
+                title, // lo que queremos actualizar
+                body,            
+            },
+            {   
+                new: true, // new: true devuelve el nuevo objeto actualizado
+                runValidators: true
+            }
+        );
+        if (!updatedPost) {
+            throw new Error("No estás autorizado a actualizar este post.");
+        }
+        return updatedPost
+    },
 }
+
+
 
 // exportamos las mutaciones para poder importarlas en el schema de graphql pero a traves de un objeto, ya que seran varias mutaciones
 module.exports = {
     register,
     login,
     createPost,
+    updatePost
 }
