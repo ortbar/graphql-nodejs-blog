@@ -4,6 +4,7 @@ const {createJWTtoken} = require('../util/auth');
 const { postType } = require("./types");
 const {authenticate} = require('../middlewares/auth');
 const { findOneAndUpdate } = require("../models/User");
+const { findOneAndDelete } = require("../models/Post");
 
 const register = {
     type: GraphQLString,
@@ -107,6 +108,28 @@ const updatePost = {
     },
 }
 
+const deletePost = {
+    type: GraphQLString,
+    description: "Delete a Post",
+    args:{
+        postId: {type: GraphQLID},
+    },
+    async resolve(_, {postId}, {verifiedUser}) {
+
+        if (!verifiedUser) {throw new Error("Unauthorized")}; // primeramente, si el usuario no tiene el token, no esta logueado
+
+        const deletedPost = await Post.findOneAndDelete({
+            _id: postId, 
+            authorId: verifiedUser._id // la persona que quiere eliminar el post es el mismo que lo creó?? se compara el idauthor de post con el id de verfiedUser
+        });
+
+        if(!deletedPost) throw new Error("Post not found");
+
+        return "Post deleted";
+    }   
+}
+
+
 
 
 // exportamos las mutaciones para poder importarlas en el schema de graphql pero a traves de un objeto, ya que seran varias mutaciones
@@ -114,5 +137,6 @@ module.exports = {
     register,
     login,
     createPost,
-    updatePost
+    updatePost,
+    deletePost
 }
