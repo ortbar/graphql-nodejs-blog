@@ -1,7 +1,7 @@
 const { GraphQLString, GraphQLID } = require("graphql");
-const { User, Post } = require('../models')
+const { User, Post, Comment } = require('../models')
 const {createJWTtoken} = require('../util/auth');
-const { postType } = require("./types");
+const { postType, commentType } = require("./types");
 const {authenticate} = require('../middlewares/auth');
 const { findOneAndUpdate } = require("../models/User");
 const { findOneAndDelete } = require("../models/Post");
@@ -118,6 +118,7 @@ const deletePost = {
 
         if (!verifiedUser) {throw new Error("Unauthorized")}; // primeramente, si el usuario no tiene el token, no esta logueado
 
+        // eliminar si existe...
         const deletedPost = await Post.findOneAndDelete({
             _id: postId, 
             authorId: verifiedUser._id // la persona que quiere eliminar el post es el mismo que lo creó?? se compara el idauthor de post con el id de verfiedUser
@@ -129,6 +130,28 @@ const deletePost = {
     }   
 }
 
+const createComment = {
+    type: commentType,
+    description: "Add a comment to the post",
+    args:{
+        comment: {type: GraphQLString},
+        postId: {type:GraphQLID},
+    },
+    async resolve (_, {comment, postId}, {verifiedUser}) {
+         const newComment = new Comment({
+            comment,
+            postId,
+            userId: verifiedUser._id // el parametro de user que esta logueado id sd añade en los argumentos apartir de verifedUser
+        })
+
+        await newComment.save()
+        return newComment
+
+
+
+    }
+
+}
 
 
 
@@ -138,5 +161,6 @@ module.exports = {
     login,
     createPost,
     updatePost,
-    deletePost
+    deletePost,
+    createComment
 }
