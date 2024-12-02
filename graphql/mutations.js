@@ -102,9 +102,9 @@ const updatePost = {
             }
         );
         if (!updatedPost) {
-            throw new Error("No estás autorizado a actualizar este post.");
+            throw new Error("comentario no encontrado.../ o ...No estás autorizado a actualizar este post. no lo has creado tú");
         }
-        return updatedPost
+        return updatedPost;
     },
 }
 
@@ -146,10 +146,43 @@ const createComment = {
 
         await newComment.save()
         return newComment
+    }
+}
 
+const updateComment = {
+    type: commentType,
+    description: "Update a Comment",
+        // que datos recibimos para poder acutalizar un comment??
+    args:{
+        id:{type:GraphQLID},
+        comment:{ type:GraphQLString},
+    },
+   async resolve(_, {id,comment}, {verifiedUser}) {
+
+        if (!verifiedUser) {throw new Error("Unauthorized")};
+
+        const commentUpdated = await Comment.findOneAndUpdate(
+            {_id: id , userId: verifiedUser._id }, // busca por ...
+            {
+                comment, // lo que queremos actualizar            
+            },
+            {   
+                new: true, // new: true devuelve el nuevo objeto actualizado
+                runValidators: true
+            }
+        );
+
+        if(!commentUpdated) {throw new Error("comentario no encontrado..por ejemplo")};
+
+        return commentUpdated;
+
+        
 
 
     }
+    
+
+
 
 }
 
@@ -162,5 +195,6 @@ module.exports = {
     createPost,
     updatePost,
     deletePost,
-    createComment
+    createComment,
+    updateComment
 }

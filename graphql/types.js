@@ -58,12 +58,12 @@ const commentType = new GraphQLObjectType ({
             resolve (parent) { // parent en este caso es comment, que guarda userId
             return User.findById(parent.userId)
         }},
-        postId: {type: postType,
+        post: {type: postType,
             resolve(parent) {
             return Post.findById(parent.postId)
-        }},
+        }
     },
-},
+    },},
 )
 
 // para poder exportarlo

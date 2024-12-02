@@ -1,8 +1,8 @@
 // aqui se listan llas consultas (funciones que retornan datos)y mutaciones (funciones que alteran datos) que podemos hacer en la api
 // ⇊⇊⇊ para poder definir consultas y migraciones ⇊⇊⇊
 const { GraphQLSchema, GraphQLObjectType } = require('graphql')
-const { users, user , posts, post } = require('./queries')
-const {register, login, createPost, updatePost, deletePost, createComment} = require('./mutations')
+const { users, user , posts, post, comments, comment } = require('./queries')
+const {register, login, createPost, updatePost, deletePost, createComment, updateComment} = require('./mutations')
 // con new graphqlSchema permite crear consultas y mutaciones
 
 // crear una consulta
@@ -13,23 +13,25 @@ const QueryType = new GraphQLObjectType({
             users, 
             user,
             posts,
-            post
+            post,
+            comments,
+            comment
         },
 })
 
 const MutationType = new GraphQLObjectType({
     name: "MutationType",
     description: "The root MutationType",
-    fields:{
-        register,
-        login,
-        user,
-        createPost,
-        updatePost,
-        deletePost,
-        createComment
-    }
-
+        fields:{
+            register,
+            login,
+            user,
+            createPost,
+            updatePost,
+            deletePost,
+            createComment,
+            updateComment
+        },       
 })
 
 
