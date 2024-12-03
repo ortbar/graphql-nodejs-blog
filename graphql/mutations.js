@@ -175,14 +175,27 @@ const updateComment = {
         if(!commentUpdated) {throw new Error("comentario no encontrado..por ejemplo")};
 
         return commentUpdated;
-
-        
-
-
     }
-    
+}
 
+const deleteComment = {
+    type: GraphQLString,
+    description: "Delete a Comment",
+    args:{
+        id: {type: GraphQLID},
+    },
+    async resolve(_, {id}, {verifiedUser}) {
+        if (!verifiedUser) {throw new Error("Unauthorized")}; 
 
+        const deletedComment = await Comment.findOneAndDelete({
+            _id: id, 
+            userId: verifiedUser._id // la persona que quiere eliminar el comment es el mismo que lo creó?? se compara el idauthor de post con el id de verfiedUser
+        });
+
+        if(!deletedComment) throw new Error("comment not found");
+
+        return "Comment deleted";
+    }
 
 }
 
@@ -196,5 +209,6 @@ module.exports = {
     updatePost,
     deletePost,
     createComment,
-    updateComment
+    updateComment,
+    deleteComment
 }
